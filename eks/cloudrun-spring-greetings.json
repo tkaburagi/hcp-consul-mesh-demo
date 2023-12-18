@@ -1,0 +1,11 @@
+{
+  "ID": "spring-greetings-2",
+  "Name": "spring-greetings-2",
+  "Address": "my-api-spring-n7akaif65q-uc.a.run.app",
+  "Port": 443,
+  "check": {
+    "http": "https://my-api-spring-n7akaif65q-uc.a.run.app",
+    "interval": "10s",
+    "timeout": "1s"
+   }
+}

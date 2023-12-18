@@ -1,0 +1,9 @@
+server:
+  service:
+    type: "LoadBalancer"
+  image:
+    tag: "v2.47.2"
+  persistentVolume:
+    enabled: false
+alertmanager:
+  enabled: false

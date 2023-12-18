@@ -1,0 +1,55 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: echo-eks-service
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: echo-eks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echo-eks
+  template:
+    metadata:
+      labels:
+        app: echo-eks
+      annotations:
+        consul.hashicorp.com/connect-inject: "true"
+        consul.hashicorp.com/connect-service-upstreams: "cr-greetings-service:5000"
+        consul.hashicorp.com/transparent-proxy: "false"
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/metrics"
+        prometheus.io/port: "80"
+    spec:
+      hostNetwork: true
+      containers:
+      - name: echo-eks
+        image: public.ecr.aws/l7i6h0r0/echo-eks:latest
+        ports:
+          - containerPort: 8080
+            name: http
+        env:
+          - name: SVC_LOCATION
+            # value: "https://my-api-spring-n7akaif65q-uc.a.run.app"
+            value: "http://127.0.0.1:5000"
+          - name: MESSAGE
+            value: "I'm running on EKS"
+      serviceAccountName: echo-eks-service
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "echo-eks-service"
+  labels:
+    app: "echo-eks"
+spec:
+  ports:
+    - protocol: "TCP"
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: "echo-eks"
+  type: "NodePort"
